@@ -25,10 +25,11 @@ from api.views import (
     RestaurantDeleteView,
     RestaurantCreateView,
 )
+from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+    path('api/token-auth/', obtain_jwt_token,name='api-login'),
     path('restaurants/list/',views.restaurant_list ,name='restaurant-list'),
     path('restaurants/favorite/',views.favorite_restaurants ,name='favorite-restaurant'),
     path('restaurants/<int:restaurant_id>/detail/',views.restaurant_detail ,name='restaurant-detail'),
@@ -41,7 +42,6 @@ urlpatterns = [
     path('signin/',views.signin ,name='signin'),
     path('signout/',views.signout ,name='signout'),
     path('no-access/',views.no_access ,name='no-access'),
-
     path('api/list/', RestaurantListView.as_view(), name='api-list'),
     path('api/create/', RestaurantCreateView.as_view(), name='api-create'),
     path('api/<int:restaurant_id>/detail/', RestaurantDetailView.as_view(), name='api-detail'),
