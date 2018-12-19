@@ -1,5 +1,17 @@
 from rest_framework import serializers
-from restaurants.models import Restaurant
+from restaurants.models import Restaurant,Item
+from django.contrib.auth.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'first_name', 'last_name']
+
+class itemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['name', 'description', 'price']
 
 class RestaurantListSerializer(serializers.ModelSerializer):
     detail = serializers.HyperlinkedIdentityField(
@@ -27,9 +39,8 @@ class RestaurantListSerializer(serializers.ModelSerializer):
             'update',
             'delete',
             ]
-
-
 class RestaurantDetailSerializer(serializers.ModelSerializer):
+    item = serializers.SerializerMethodField()
     update = serializers.HyperlinkedIdentityField(
         view_name = "api-update",
         lookup_field = "id",
@@ -40,6 +51,7 @@ class RestaurantDetailSerializer(serializers.ModelSerializer):
         lookup_field = "id",
         lookup_url_kwarg = "restaurant_id"
         )
+    owner =  UserSerializer()
     class Meta:
         model = Restaurant
         fields = [
@@ -51,7 +63,11 @@ class RestaurantDetailSerializer(serializers.ModelSerializer):
             'closing_time',
             'update',
             'delete',
+            'item',
             ]
+    def get_item(self, obj):
+        return itemSerializer(obj.item_set.all(),many=True).data
+
 
 class RestaurantCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
